@@ -1,0 +1,28 @@
+
+.ui.container::-webkit-scrollbar { width: 0 !important }
+
+.ui.button {
+    color: white;
+}
+
+.row {
+    margin-top: 1rem;
+}
+
+textarea {
+    width: 100%;
+    border-style: none;
+    outline: none;
+}
+
+#addButton {
+    background-color: #008C86;
+}
+
+#uploadButton {
+    background-color: #2185D0;
+}
+
+#deleteButton {
+    background-color: #DB2828;
+}

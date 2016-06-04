@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <title>Picture Upload</title>
+    <link rel="stylesheet" href="Semantic/semantic.css">
+    <link rel="stylesheet" href="Public/sweetalert.css">
+    <link rel="stylesheet" href="Public/datepicker.css">
+    <style>
+        .ui.button {
+            color: white;
+        }
+
+        .ui.label {
+                background-color: rgba(0, 0, 0, 0);
+        }
+
+        .row {
+            margin-top: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            border-style: none;
+            outline: none;
+        }
+
+        #addButton {
+            background-color: #008C86;
+        }
+
+        #uploadButton {
+            background-color: #2185D0;
+        }
+
+        #deleteButton {
+            background-color: #DB2828;
+        }
+        /* Grow Shadow */
+        .hvr-grow-shadow {
+            display: inline-block;
+            vertical-align: middle;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            box-shadow: 0 0 0.1rem rgba(0, 0, 0, 0);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-transition-duration: 0.3s;
+            transition-duration: 0.3s;
+            -webkit-transition-property: box-shadow, transform;
+            transition-property: box-shadow, transform;
+        }
+        .hvr-grow-shadow:hover, .hvr-grow-shadow:focus, .hvr-grow-shadow:active {
+            box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
+            -webkit-transform: scale(1.03);
+            transform: scale(1.03);
+        }
+
+        /* Pulse Grow */
+        @-webkit-keyframes hvr-pulse-grow {
+            to {
+                -webkit-transform: scale(1.1);
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes hvr-pulse-grow {
+            to {
+                -webkit-transform: scale(1.1);
+                transform: scale(1.1);
+            }
+        }
+
+        .hvr-pulse-grow {
+            display: inline-block;
+            vertical-align: middle;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .hvr-pulse-grow:hover, .hvr-pulse-grow:focus, .hvr-pulse-grow:active {
+            -webkit-animation-name: hvr-pulse-grow;
+            animation-name: hvr-pulse-grow;
+            -webkit-animation-duration: 0.3s;
+            animation-duration: 0.3s;
+            -webkit-animation-timing-function: linear;
+            animation-timing-function: linear;
+            -webkit-animation-iteration-count: infinite;
+            animation-iteration-count: infinite;
+            -webkit-animation-direction: alternate;
+            animation-direction: alternate;
+        }
+        .ui.floatingUp.label {
+            position: absolute;
+            z-index: 100;
+            top: 0em;
+            left: 100%;
+            margin: 0em 0em 0em -3.1em !important;
+            padding: 0px;
+        }
+        .ui.floatingDown.label {
+            position: absolute;
+            z-index: 100;
+            top: 0em;
+            left: 100%;
+            margin: 0em 0em 0em -6.2em !important;
+            padding: 0px;
+        }
+        i.icon {
+            display: table-row;
+            margin: 0px;
+        }
+        a{
+            color: #86B1DC;
+        }
+    </style>
+    <script src="Public/jquery.min.js"></script>
+    <script src="Public/sweetalert.min.js"></script>
+    <script src="Semantic/semantic.min.js"></script>
+    <script src="Public/datepicker.js"></script>
+    <script src="Public/datepicker.en.js"></script>
+</head>
+<body>
+<div class="ui container">
+    <form method="post">
+        <div class="row">
+            <div class="ui action input">
+                <select name="deleteFolder" class="ui compact selection dropdown" id="deleteFolder">
+                    <option value="delete">Delete Folder</option>
+                    <!--use ajax to add folder-->
+                </select>
+                <div id="deleteButton" class="ui animated fade button" tabindex="0">
+                    <div class="visible content">Delete</div>
+                    <div class="hidden content">
+                        <i class="inverted trash outline icon"></i>
+                    </div>
+                </div>
+                <button id="deleteFolderButton" type="submit" hidden>delete</button>
+            </div>
+        </div>
+    </form>
+    <div class="ui horizontal divider">Or</div>
+    <form id="upload_form" enctype="multipart/form-data" method="post">
+        <div id="addButton" class="ui animated fade button">
+            <div class="visible content">Add Picture</div>
+            <div class="hidden content">
+                <i class="inverted plus icon"></i>
+            </div>
+        </div>
+        <div class="ui action input">
+            <input name="createFolder" type="text" placeholder="Create Folder"
+                   onkeypress="return removeSpecial(event)" oninput="maxLengthCheck(this)" maxlength="20">
+            <select id="selectFolder" name="selectFolder" class="ui compact selection dropdown">
+                <option value="default">Default Folder</option>
+                <!--use ajax to get the value-->
+            </select>
+            <div id="uploadButton" class="ui animated fade button">
+                <div class="visible content">Upload</div>
+                <div class="hidden content">
+                    <i class="inverted send outline icon"></i>
+                </div>
+            </div>
+        </div>
+        <input type="file" name="pictures[]" id="addPictures" multiple hidden>
+        <input type="button" value="Upload File" id="submit" onclick="uploadFile()" hidden>
+        <div class="ui teal progress" id="progressBar">
+            <div class="bar">
+                <div class="progress"></div>
+            </div>
+            <div class="label" id="status"></div>
+        </div>
+        <div class="row">
+            <div class="ui divided items" id="imageContainer">
+                <!--The place to hold the pictures-->
+            </div>
+        </div>
+    </form>
+</div>
+
+    <div class="ui active inverted dimmer">
+        <div class="ui medium text loader">Loading</div>
+    </div>
+
+
+<script>
+    var FLAG;
+    $(document).ready(function () {
+        if ($(".container").width() > 768) {
+            FLAG = true;
+        } else {
+            FLAG = false;
+        }
+
+        _("addButton").addEventListener("click", function () {
+            $("#addPictures").click();
+        });
+        _("uploadButton").addEventListener("click", function () {
+            $("#submit").click();
+        });
+        _("deleteButton").addEventListener("click", deleteFolder);
+
+        loadFolder();
+
+        defaultLoad(FLAG);
+    });
+    function defaultLoad(FLAG) {
+        if (FLAG == true) {
+            _("imageContainer").className = "ui six column grid";
+        } else {
+            _("imageContainer").className = "ui divided items";
+        }
+        _("addPictures").addEventListener("change", function () {
+            var node = _("imageContainer");
+            while (node.hasChildNodes()) {
+                node.removeChild(node.lastChild);
+            }
+            for (var i = 0; i < this.files.length; i++) {
+                var file = this.files[i];
+                if (!/image\/\w+/.test(file.type)) {
+                    alert("文件必须为图片！");
+                    return false;
+                }
+                var reader = new FileReader();
+
+                reader.onload = (function (tempFile) {
+                    return function (evt) {
+                        createDataBindingPic(evt, tempFile)
+                    };
+                })(file);
+                reader.readAsDataURL(file);
+            }
+
+        });
+        $("select").dropdown();
+
+    }
+    ;
+    function createDataBindingPic(evt, file) {
+        var date = GetDate();
+        var titleName = ("TITLE" + file.name).replace(".", "_");
+        var dateName = ("DATE" + file.name).replace(".", "_");
+        var descName = ("DESC" + file.name).replace(".", "_");
+        var itemView = '<div class="item" id="'+titleName+'">' +
+                '<div class="image">' +
+                '<a class="ui right corner label" onclick="deleteFile(\'' + titleName + '\')"> ' +
+                '<i class="trash icon"></i> ' +
+                '</a> ' +
+                '<img src="' + evt.target.result + '">' +
+                '</div>' +
+                '<div class="content">' +
+                '<div class="header ui transparent input"> ' +
+                '<input type="text" class="TITLE" placeholder="Title..." name="' + titleName + '" autocomplete="off">' +
+                '</div>' +
+                '<div class="meta">' +
+                '<div class="ui transparent input">' +
+                '<input maxlength="10" class="form-control datepicker-here" type="text" data-language="en" data-date-format="yyyy-mm-dd" data-position="top left" name="' + dateName + '"  value="' + date + '" required/>' +
+                '</div>' +
+                '</div>' +
+                '<div class="description">' +
+                '<textarea class="DESC" type="text" placeholder="Please input what you want to say" name="' + descName + '"></textarea>' +
+                '</div>' +
+                '</div>'+
+                '</div>';
+        var cardView = '<div class="column"  id="'+titleName+'"> ' +
+                '<div class="ui fluid card"> ' +
+                '<div class="image">' +
+                '<a class="ui right corner label" onclick="deleteFile(\'' + titleName + '\')"> ' +
+                '<i class="trash icon"></i> ' +
+                '</a> ' +
+                '<img src="' + evt.target.result + '" alt=""/> ' +
+                '</div> ' +
+                '<div class="content"> ' +
+                '<div class="header ui transparent input"> ' +
+                '<input class="TITLE" type="text" placeholder="Title..." name="' + titleName + '" autocomplete="off"> </div><div class="meta ui transparent input">' +
+                '<input maxlength="10" class="form-control datepicker-here" type="text" data-language="en" data-date-format="yyyy-mm-dd" data-position="top left" name="' + dateName + '"  value="' + date + '" required/>' +
+                '</div> ' +
+                '<div class="meta ui transparent input"> ' +
+                '<textarea class="DESC" type="text" placeholder="Please input what you want to say" name="' + descName + '"></textarea> ' +
+                '</div> ' +
+                '</div> ' +
+                '</div>';
+        if (FLAG == true) {
+            $("#imageContainer").append(cardView);
+        } else {
+            $("#imageContainer").append(itemView);
+        }
+        $('.datepicker-here').datepicker();
+    }
+    function GetDate() {
+        var d = new Date();
+        var day = d.getDate();
+        var month = d.getMonth() + 1;
+        var year = d.getFullYear();
+        if (day < 10) {
+            day = "0" + day;
+        }
+        if (month < 10) {
+            month = "0" + month;
+        }
+        return year + "-" + month + "-" + day;
+    }
+    function _(item) {
+        return document.getElementById(item);
+    }
+
+    function loadFolder() {
+        $.ajax({
+            url: 'Server_SQL.php?TYPE=folder',
+            data: {},
+            async: true,
+            type: 'get',
+            cache: false,
+            dataType: 'json',
+            success: function (data) {
+                if (data == "No Folder") {
+                    return;
+                }
+                for (var i = 0; i < data.length; i++) {
+                    if (data[i] == "default") {
+                        var temp = '<option value="' + data[i] + '">' + data[i] + '</option>';
+                        $("#deleteFolder").append(temp);
+                        continue;
+                    }
+
+                    var temp = '<option value="' + data[i] + '">' + data[i] + '</option>';
+                    $("#selectFolder").append(temp);
+                    $("#deleteFolder").append(temp);
+                }
+            },
+            error: function () {
+                alert("connect error!");
+            }
+        });
+    }
+    function deleteFolder() {
+        var folder = _("deleteFolder").value;
+        if (folder == "delete") {
+            swal("Please select a folder!");
+            return;
+        }
+        swal({
+            title: "Are you sure?",
+            text: "You will not be able to recover these files!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, delete it!",
+            closeOnConfirm: false
+        }, function () {
+            var folder = _("deleteFolder").value;
+            $.ajax({
+                url: 'Server_SQL.php',
+                data: {deleteFolder: folder},
+                async: true,
+                type: 'post',
+                cache: false,
+                dataType: 'json',
+                success: function (data) {
+                    swal({
+                        title: "Deleted!",
+                        text: "Your folder and files have been deleted.",
+                        type: "success",
+                        showCancelButton: false,
+                        confirmButtonColor: "#8CD4F5",
+                        confirmButtonText: "OK!",
+                        closeOnConfirm: false
+                    },function(){location.reload(true);});
+                },
+                error: function () {
+                    alert("connect error!");
+                }
+            });
+        });
+    }
+    function deleteFile(fileName){
+        _("imageContainer").removeChild(_(fileName));
+    }
+    function uploadFile() {
+        var file = _("addPictures");
+        var formdata = new FormData();
+        var picName = "pictures[]";
+        for(var i=0;i<file.files.length;i++){
+            var FILE = file.files[i];
+            var fileName = file.files[i].name;
+
+            var titleName = ("TITLE" + fileName).replace(".", "_");
+            var dateName = ("DATE" + fileName).replace(".", "_");
+            var descName = ("DESC" + fileName).replace(".", "_");
+
+            if(document.getElementsByName(dateName)[0] === undefined)
+                continue;
+
+            formdata.append(picName, FILE);
+            formdata.append(titleName, document.getElementsByName(titleName)[0].value);
+            formdata.append(dateName, document.getElementsByName(dateName)[0].value);
+            formdata.append(descName, document.getElementsByName(descName)[0].value);
+        }
+        formdata.append("selectFolder", document.getElementsByName("selectFolder")[0].value);
+        formdata.append("createFolder", document.getElementsByName("createFolder")[0].value);
+
+        var ajax = new XMLHttpRequest();
+        ajax.upload.addEventListener("progress", progressHandler, false);
+        ajax.addEventListener("load", completeHandler, false);
+        ajax.addEventListener("error", errorHandler, false);
+        ajax.addEventListener("abort", abortHandler, false);
+        ajax.open("POST", "file_upload_parser.php");
+        ajax.send(formdata);
+    }
+    function progressHandler(event) {
+        var percent = (event.loaded / event.total) * 100;
+        $('#progressBar').progress({
+            percent: Math.round(percent)
+        });
+        var loaded = Math.round(event.loaded / (1024 * 1024));
+        var total = Math.round(event.total / (1024 * 1024));
+        _("status").innerHTML = loaded + "/" + total + "M  please wait...";
+    }
+    function completeHandler(event) {
+        _("status").innerHTML = "Completed!";
+//        swal({
+//            title: "Completed!",
+//            type: "success",
+//            showCancelButton: false,
+//            confirmButtonColor: "#8CD4F5",
+//            confirmButtonText: "OK!",
+//            closeOnConfirm: false
+//        },function(){location.reload(true);});
+    }
+    function errorHandler(event) {
+        _("status").innerHTML = "Upload Failed";
+    }
+    function abortHandler(event) {
+        _("status").innerHTML = "Upload Aborted";
+    }
+    function maxLengthCheck(object) {
+        if (object.value.length > object.maxLength)
+            object.value = object.value.slice(0, object.maxLength)
+    }
+    function isNumeric(evt) {
+        var theEvent = evt || window.event;
+        var key = theEvent.keyCode || theEvent.which;
+        key = String.fromCharCode(key);
+        var regex = /[0-9]|\./;
+        if (!regex.test(key)) {
+            theEvent.returnValue = false;
+            if (theEvent.preventDefault) theEvent.preventDefault();
+        }
+    }
+    function removeSpecial(evt) {
+        var theEvent = evt || window.event;
+        var key = theEvent.keyCode || theEvent.which;
+        key = String.fromCharCode(key);
+        var regex = /\.|\+|\*|\-|[,\\/<>?:;'"\{}\[\]|=_!@#$%^&()`~ ]/;
+        if (regex.test(key)) {
+            theEvent.returnValue = false;
+            if (theEvent.preventDefault) theEvent.preventDefault();
+        }
+    }
+</script>
+
+</body>
+</html>

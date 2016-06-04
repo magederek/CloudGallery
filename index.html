@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width" />
+    <title>Cloud Gallery</title>
+    <link rel="stylesheet" href="Semantic/semantic.css">
+</head>
+<body>
+
+<div class="ui sidebar">
+
+</div>
+<div class="pusher">
+    <div class="ui menu">
+        <a class="item" onclick="callSidebar();">
+            <i class="sidebar icon"></i>
+            Home
+        </a>
+    </div>
+    <div style="vertical-align: middle; text-align: center">
+        <img src="Public/home-new.png" width="85%">
+    </div>
+</div>
+
+<script src="Public/jquery.min.js"></script>
+<script src="Semantic/semantic.min.js"></script>
+<script src="sidebar.js"></script>
+<script>
+    $(".pusher").height(document.body.clientHeight);
+</script>
+</body>

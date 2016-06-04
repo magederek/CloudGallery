@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width" />
+    <title>Upload Video</title>
+    <link rel="stylesheet" href="Semantic/semantic.css">
+    <link rel="stylesheet" href="Public/sweetalert.css">
+    <link rel="stylesheet" href="Public/datepicker.css">
+    <link rel="stylesheet" href="uploadPic.css">
+</head>
+<body>
+<div class="ui sidebar">
+
+</div>
+<div class="pusher">
+    <div class="ui menu">
+        <a class="item" onclick="callSidebar();">
+            <i class="sidebar icon"></i>
+            Home
+        </a>
+    </div>
+    <div class="ui container" >
+    <form method="post">
+        <div class="row">
+            <div class="ui action input">
+                <select name="deleteFolder" class="ui compact selection dropdown" id="deleteFolder">
+                    <option value="delete">Delete Folder</option>
+                    <!--use ajax to add folder-->
+                </select>
+                <div id="deleteButton" class="ui animated fade button" tabindex="0">
+                    <div class="visible content">Delete</div>
+                    <div class="hidden content">
+                        <i class="inverted trash outline icon"></i>
+                    </div>
+                </div>
+                <button id="deleteFolderButton" type="submit" hidden>delete</button>
+            </div>
+        </div>
+    </form>
+    <div class="ui horizontal divider">Or</div>
+    <form id="upload_form" enctype="multipart/form-data" method="post">
+        <div id="addButton" class="ui animated fade button">
+            <div class="visible content">Add Video</div>
+            <div class="hidden content">
+                <i class="inverted plus icon"></i>
+            </div>
+        </div>
+        <div class="ui action input">
+            <input name="createFolder" type="text" placeholder="Create Folder" style="width: 50%;"
+                   onkeypress="return removeSpecial(event)" oninput="maxLengthCheck(this)" maxlength="20">
+            <select id="selectFolder" name="selectFolder" class="ui compact selection dropdown">
+                <option value="Default">Default</option>
+                <!--use ajax to get the value-->
+            </select>
+            <div id="uploadButton" class="ui animated fade button">
+                <div class="visible content">Upload</div>
+                <div class="hidden content">
+                    <i class="inverted send outline icon"></i>
+                </div>
+            </div>
+        </div>
+        <input type="file" name="video" id="addVideo" hidden>
+        <input type="button" value="Upload File" id="submit" onclick="uploadFile()" hidden>
+        <div class="ui teal progress" id="progressBar" data-value="0" data-total="100">
+            <div class="bar">
+                <div class="progress"></div>
+            </div>
+            <div class="label" id="status"></div>
+        </div>
+        <div class="row">
+            <div class="ui divided items" id="videoContainer">
+                <!--The place to hold the pictures-->
+            </div>
+        </div>
+    </form>
+</div>
+</div>
+<script src="Public/jquery.min.js"></script>
+<script src="Public/sweetalert.min.js"></script>
+<script src="Semantic/semantic.min.js"></script>
+<script src="Public/datepicker.js"></script>
+<script src="Public/datepicker.en.js"></script>
+<script src="sidebar.js"></script>
+<script src="uploadVideo.js"></script>
+
+</body>
+</html>

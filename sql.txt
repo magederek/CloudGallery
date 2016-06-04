@@ -1,0 +1,39 @@
+create database CloudGallery;
+DEFAULT CHARACTER SET utf8
+DEFAULT COLLATE utf8_general_ci;
+
+use CloudGallery;
+
+CREATE TABLE pictures
+  (
+      p_id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+      name VARCHAR(50) NOT NULL,
+      date VARCHAR(10) NOT NULL,
+      width INT NOT NULL,
+      height INT NOT NULL,
+      folder VARCHAR(100) NOT NULL,
+      desc_id INT NOT NULL
+  );
+
+CREATE TABLE description
+(
+  d_id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  title VARCHAR(50) DEFAULT NULL,
+  description VARCHAR(300) DEFAULT NULL
+);
+
+CREATE TABLE videos
+(
+    v_id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    a_name VARCHAR(100) NOT NULL,
+    date VARCHAR(10) NOT NULL,
+    folder VARCHAR(100) NOT NULL,
+    desc_id INT NOT NULL
+);
+
+CREATE TABLE user
+(
+  username VARCHAR(30) NOT NULL,
+  password VARCHAR(36) NOT NULL
+);
